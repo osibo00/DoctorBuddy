@@ -23,6 +23,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 import productions.darthplagueis.doctorbuddy.abstractclasses.FragmentAbstractActivity;
+import productions.darthplagueis.doctorbuddy.util.NetworkConnectivity;
 
 public class SignUpActivity extends FragmentAbstractActivity {
 
@@ -32,12 +33,13 @@ public class SignUpActivity extends FragmentAbstractActivity {
     private SignInButton signInButton;
 
     private GoogleApiClient googleApiClient;
+
     private FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        signInButton = (SignInButton) findViewById(R.id.sign_in_button);
+        setViews();
         signInButton.setOnClickListener(this);
 
         GoogleSignInOptions googleSignInOptions =
@@ -57,6 +59,18 @@ public class SignUpActivity extends FragmentAbstractActivity {
     @Override
     protected int getLayoutId() {
         return R.layout.activity_sign_in;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        googleApiClient.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        googleApiClient.disconnect();
+        super.onStop();
     }
 
     @Override
@@ -84,13 +98,29 @@ public class SignUpActivity extends FragmentAbstractActivity {
                 firebaseAuthWithGoogle(account);
             } else {
                 Log.e(TAG, "Google Sign-In failed.");
+                Log.e(TAG, "onActivityResult: " + result.getStatus());
             }
         }
     }
 
+    private void setViews() {
+        signInButton = (SignInButton) findViewById(R.id.sign_in_button);
+        signInButton.setSize(SignInButton.SIZE_WIDE);
+        signInButton.setColorScheme(SignInButton.COLOR_DARK);
+
+        //setTitle("Please Sign In");
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
+    }
+
     private void signIn() {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+        if (NetworkConnectivity.isConnected(this)) {
+            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
+            startActivityForResult(signInIntent, RC_SIGN_IN);
+        } else {
+            showSnackbar("No Network Connectivity.");
+        }
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
@@ -110,15 +140,5 @@ public class SignUpActivity extends FragmentAbstractActivity {
                         }
                     }
                 });
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
     }
 }

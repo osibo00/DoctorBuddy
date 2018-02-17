@@ -3,7 +3,6 @@ package productions.darthplagueis.doctorbuddy;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -29,13 +28,17 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import productions.darthplagueis.doctorbuddy.abstractclasses.FragmentAbstractActivity;
+import productions.darthplagueis.doctorbuddy.fragments.DocDetailFragment;
 import productions.darthplagueis.doctorbuddy.fragments.DoctorFragment;
+import productions.darthplagueis.doctorbuddy.model.Doctor;
 import productions.darthplagueis.doctorbuddy.util.NetworkConnectivity;
 
-public class GeneralActivity extends FragmentAbstractActivity {
+public class GeneralActivity extends FragmentAbstractActivity implements
+        GoogleApiClient.ConnectionCallbacks {
 
     public static final String TAG = "GeneralActivity";
     public static final String ANONYMOUS = "anonymous";
+    private static final int RC_LOCATION = 4020;
     private String username;
     private String photoUrl;
     private long UPDATE_INTERVAL = 2 * 5000;
@@ -55,18 +58,18 @@ public class GeneralActivity extends FragmentAbstractActivity {
 
         googleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this, this)
+                .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .addApi(Auth.GOOGLE_SIGN_IN_API)
                 .build();
 
-        locationRequest = new LocationRequest();
-        locationRequest.setInterval(UPDATE_INTERVAL);
-        locationRequest.setFastestInterval(FASTEST_INTERVAL);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+//        locationRequest = new LocationRequest();
+//        locationRequest.setInterval(UPDATE_INTERVAL);
+//        locationRequest.setFastestInterval(FASTEST_INTERVAL);
+//        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-        showDoctorFragment("37.773,-122.413");
+        locationProviderClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
     @Override
@@ -83,14 +86,19 @@ public class GeneralActivity extends FragmentAbstractActivity {
             startActivity(new Intent(this, SignUpActivity.class));
             finish();
         } else {
+            googleApiClient.connect();
             username = firebaseUser.getDisplayName();
             if (firebaseUser.getPhotoUrl() != null) {
                 photoUrl = firebaseUser.getPhotoUrl().toString();
             }
         }
-        haveLocationPermission();
     }
 
+    @Override
+    protected void onStop() {
+        googleApiClient.disconnect();
+        super.onStop();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -122,30 +130,44 @@ public class GeneralActivity extends FragmentAbstractActivity {
     }
 
     @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        if (ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(GeneralActivity.this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, RC_LOCATION);
+        } else {
+            Log.d(TAG, "GoogleApiClient is connected.");
+            passLocationToFragment();
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+    }
+
+    @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
     }
 
-    public boolean haveLocationPermission() {
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED ||
-                    checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
-                Log.w(GeneralActivity.TAG, "Permission: " + "You have permission.");
-                return true;
-            } else {
-                Log.w(GeneralActivity.TAG, "Permission: " + "You have asked for permission.");
-                ActivityCompat.requestPermissions(this, new
-                        String[]{android.Manifest.permission.ACCESS_FINE_LOCATION,
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION}, 1010);
-                return false;
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Log.d(TAG, "onRequestPermissionsResult: requestCode=" + requestCode);
+        if (requestCode == RC_LOCATION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                passLocationToFragment();
             }
-        } else {
-            Log.w(GeneralActivity.TAG, "Permission: " + "Does not require requestPermissions.");
-            return true;
         }
+    }
+
+    public void showDocDetailFragment(Doctor doctor) {
+        DocDetailFragment docDetailFragment = new DocDetailFragment();
+        showFragment(docDetailFragment);
     }
 
     private void showDoctorFragment(String location) {
@@ -158,42 +180,31 @@ public class GeneralActivity extends FragmentAbstractActivity {
         }
     }
 
-    private double round(double value) {
-        BigDecimal bd = new BigDecimal(value);
-        bd = bd.setScale(3, RoundingMode.HALF_UP);
-        return bd.doubleValue();
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        if (ActivityCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(GeneralActivity.this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
-                    4020);
-            return;
+    private void passLocationToFragment() {
+        try {
+            locationProviderClient.getLastLocation().addOnSuccessListener(this,
+                    new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            if (location != null) {
+                                Log.d(TAG, "LastLocation: " + location);
+                                double lat = location.getLatitude();
+                                double lng = location.getLongitude();
+                                String latLng = String.valueOf(roundThreePlaces(lat)) + ","
+                                        + String.valueOf(roundThreePlaces(lng));
+                                Log.d(TAG, "latLng=" + latLng);
+                                showDoctorFragment(latLng);
+                            }
+                        }
+                    });
+        } catch (SecurityException e) {
+            e.printStackTrace();
         }
-        Log.d(TAG, "onConnected: ");
-        locationProviderClient.getLastLocation().addOnSuccessListener(this,
-                new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                if (location != null) {
-                    double lat = location.getLatitude();
-                    double lng = location.getLongitude();
-                    String latLng = String.valueOf(round(lat)) + ","
-                            + String.valueOf(round(lng));
-                    //showDoctorFragment(latLng);
-
-                }
-            }
-        });
     }
 
-    @Override
-    public void onConnectionSuspended(int i) {
-
+    private double roundThreePlaces(double value) {
+        BigDecimal bigDecimal = new BigDecimal(value);
+        bigDecimal = bigDecimal.setScale(3, RoundingMode.HALF_UP);
+        return bigDecimal.doubleValue();
     }
 }

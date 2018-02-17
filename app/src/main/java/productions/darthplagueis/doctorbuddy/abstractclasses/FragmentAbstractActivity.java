@@ -12,11 +12,9 @@ import android.view.View;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import productions.darthplagueis.doctorbuddy.R;
-import productions.darthplagueis.doctorbuddy.fragments.AbstractFragment;
 import productions.darthplagueis.doctorbuddy.fragments.LoadingFragment;
 
 public abstract class FragmentAbstractActivity extends AppCompatActivity implements
-        GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
     public final FragmentManager fragmentManager = getSupportFragmentManager();

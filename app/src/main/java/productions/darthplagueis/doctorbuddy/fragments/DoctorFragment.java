@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import java.util.List;
 
 import productions.darthplagueis.doctorbuddy.R;
+import productions.darthplagueis.doctorbuddy.abstractclasses.AbstractFragment;
 import productions.darthplagueis.doctorbuddy.model.Doctor;
 import productions.darthplagueis.doctorbuddy.network.RetrofitFactory;
 import productions.darthplagueis.doctorbuddy.recyclerview.controller.DoctorAdapter;

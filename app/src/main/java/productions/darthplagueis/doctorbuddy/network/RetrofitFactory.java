@@ -5,6 +5,7 @@ import android.util.Log;
 
 import java.util.List;
 
+import productions.darthplagueis.doctorbuddy.abstractclasses.AbstractRetrofitFactory;
 import productions.darthplagueis.doctorbuddy.model.Doctor;
 import productions.darthplagueis.doctorbuddy.model.ModelResponse;
 import productions.darthplagueis.doctorbuddy.util.Host;

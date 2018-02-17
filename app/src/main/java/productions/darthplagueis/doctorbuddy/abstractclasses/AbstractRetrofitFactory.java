@@ -1,4 +1,4 @@
-package productions.darthplagueis.doctorbuddy.network;
+package productions.darthplagueis.doctorbuddy.abstractclasses;
 
 import android.support.annotation.NonNull;
 
