@@ -1,4 +1,4 @@
-package productions.darthplagueis.doctorbuddy.fragments;
+package productions.darthplagueis.doctorbuddy.abstractclasses;
 
 
 import android.content.Context;

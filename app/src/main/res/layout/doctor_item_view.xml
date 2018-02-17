@@ -1,23 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:paddingBottom="16dp"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        android:paddingTop="16dp">
 
-    <ImageView
-        android:id="@+id/doctor_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        <ImageView
+            android:id="@+id/doctor_image"
+            android:layout_width="110dp"
+            android:layout_height="110dp"
+            android:layout_alignParentEnd="true"
+            android:contentDescription="@string/doctor_image_desc"
+            tools:src="@mipmap/ic_launcher" />
 
-    <TextView
-        android:id="@+id/doctor_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/doctor_image"/>
+        <TextView
+            android:id="@+id/doctor_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@id/doctor_image"
+            android:textAlignment="textStart"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            tools:text="@string/app_name" />
+
+        <TextView
+            android:id="@+id/doctor_speciality"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/doctor_name"
+            android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@id/doctor_image"
+            android:textAlignment="textStart"
+            android:textColor="@android:color/black"
+            android:textSize="15sp"
+            tools:text="@string/app_name" />
+
+        <TextView
+            android:id="@+id/specializes_in"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/doctor_speciality"
+            android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@id/doctor_image"
+            android:textAlignment="textStart"
+            android:textColor="@android:color/black"
+            android:textSize="15sp"
+            tools:text="@string/app_name" />
 
     </RelativeLayout>
 

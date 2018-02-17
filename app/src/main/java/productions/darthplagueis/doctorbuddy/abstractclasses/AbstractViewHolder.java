@@ -7,7 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 
-public abstract class AbstractViewHolder<T> extends RecyclerView.ViewHolder {
+public abstract class AbstractViewHolder<T> extends RecyclerView.ViewHolder
+        implements View.OnClickListener {
 
     private Context context;
     private Resources resources;
@@ -16,6 +17,7 @@ public abstract class AbstractViewHolder<T> extends RecyclerView.ViewHolder {
         super(itemView);
         setupFields(itemView);
         setViews();
+        setOnClickListeners();
     }
 
     private void setupFields(@NonNull View itemView) {
@@ -35,5 +37,9 @@ public abstract class AbstractViewHolder<T> extends RecyclerView.ViewHolder {
     @NonNull
     protected Resources getResources() {
         return resources;
+    }
+
+    public void setOnClickListeners () {
+        itemView.setOnClickListener(this);
     }
 }
