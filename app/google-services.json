@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "642205130356",
+    "firebase_url": "https://doctor-buddy-6beb5.firebaseio.com",
+    "project_id": "doctor-buddy-6beb5",
+    "storage_bucket": "doctor-buddy-6beb5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:642205130356:android:12bdb78ec1646be7",
+        "android_client_info": {
+          "package_name": "productions.darthplagueis.doctorbuddy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "642205130356-13fndnvepththbshrnjf31v7hujbporg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "productions.darthplagueis.doctorbuddy",
+            "certificate_hash": "016fde80740fda3b36d0259afe9db84f3f8ed2ff"
+          }
+        },
+        {
+          "client_id": "642205130356-0f18cvk1kgan5cc5vtg5dkvk06dl00bo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpgXPCuHUNEqatmADISxoGvdSKyYT90lk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "642205130356-0f18cvk1kgan5cc5vtg5dkvk06dl00bo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
