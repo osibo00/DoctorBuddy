@@ -27,6 +27,7 @@ import productions.darthplagueis.doctorbuddy.recyclerview.viewholder.MapViewHold
 public class LocationRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<T> list;
+    private List<LatLng> latLngList;
     private LatLng location;
     private float mapZoom;
     private AbstractFragment abstractFragment;
@@ -73,15 +74,22 @@ public class LocationRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
     public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
         super.onViewAttachedToWindow(holder);
         if (holder instanceof MapViewHolder) {
-            ((MapViewHolder) holder).getMapFragmentAndCallBack(new OnMapReadyCallback() {
-                @Override
-                public void onMapReady(GoogleMap googleMap) {
-                    googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                    googleMap.addMarker(new MarkerOptions().position(location));
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLng(location));
-                    googleMap.moveCamera(CameraUpdateFactory.zoomTo(mapZoom));
-                }
-            });
+            if (!latLngList.isEmpty()) {
+                ((MapViewHolder) holder).getMapFragmentAndCallBack(new OnMapReadyCallback() {
+                    @Override
+                    public void onMapReady(GoogleMap googleMap) {
+                        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                        googleMap.addMarker(new MarkerOptions().position(location));
+                        googleMap.addMarker(new MarkerOptions().position(latLngList.get(0)));
+                        googleMap.addMarker(new MarkerOptions().position(latLngList.get(1)));
+                        googleMap.addMarker(new MarkerOptions().position(latLngList.get(2)));
+                        googleMap.addMarker(new MarkerOptions().position(latLngList.get(3)));
+                        googleMap.addMarker(new MarkerOptions().position(latLngList.get(4)));
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLng(location));
+                        googleMap.moveCamera(CameraUpdateFactory.zoomTo(mapZoom));
+                    }
+                });
+            }
         }
     }
 
@@ -112,8 +120,9 @@ public class LocationRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerVie
         } else return 3;
     }
 
-    public void updateList(@NonNull List<T> newList) {
+    public void updateList(@NonNull List<T> newList, @NonNull List<LatLng> latLngList) {
         list.addAll(newList);
+        this.latLngList = latLngList;
         notifyItemRangeInserted(getItemCount(), list.size() - 1);
     }
 

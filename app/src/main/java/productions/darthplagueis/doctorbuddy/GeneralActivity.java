@@ -24,12 +24,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
 import productions.darthplagueis.doctorbuddy.abstractclasses.FragmentAbstractActivity;
 import productions.darthplagueis.doctorbuddy.fragments.DocDetailFragment;
-import productions.darthplagueis.doctorbuddy.fragments.DoctorFragment;
 import productions.darthplagueis.doctorbuddy.fragments.SearchFragment;
 import productions.darthplagueis.doctorbuddy.model.Doctor;
 import productions.darthplagueis.doctorbuddy.util.NetworkConnectivity;
@@ -177,7 +173,7 @@ public class GeneralActivity extends FragmentAbstractActivity implements
             SearchFragment searchFragment = new SearchFragment();
             searchFragment.setLat(lat);
             searchFragment.setLng(lng);
-            showFragment(searchFragment);
+            replaceFragmentView(searchFragment);
         } else {
             showSnackbar("No Network Connectivity.");
         }
