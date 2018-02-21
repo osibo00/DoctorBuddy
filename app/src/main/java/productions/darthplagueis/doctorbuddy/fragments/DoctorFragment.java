@@ -28,7 +28,8 @@ public class DoctorFragment extends AbstractFragment {
 
     @Override
     public void onCreateView() {
-        getParentActivity().showLoadingFragment();
+        //getParentActivity().showLoadingFragment();
+        getParentActivity().showLoadingRecycler();
         doctorAdapter = new DoctorAdapter();
         setViews();
         getListOfDoctors();

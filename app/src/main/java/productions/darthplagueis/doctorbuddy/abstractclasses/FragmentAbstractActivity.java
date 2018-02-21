@@ -56,6 +56,22 @@ public abstract class FragmentAbstractActivity extends AppCompatActivity impleme
                 .commit();
     }
 
+    public void addFragmentToView(@NonNull AbstractFragment abstractFragment) {
+        fragmentManager.beginTransaction()
+                .setCustomAnimations(0, R.anim.fade_out)
+                .add(getContainerId(), abstractFragment)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    public void showLoadingRecycler() {
+        if (!loadingFragment.isAdded() && !isFinishing()) {
+            fragmentManager.beginTransaction()
+                    .add(R.id.recycler_container, loadingFragment)
+                    .commit();
+        }
+    }
+
     public void showLoadingFragment() {
         if (!loadingFragment.isAdded() && !isFinishing()) {
             fragmentManager.beginTransaction()
