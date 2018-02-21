@@ -48,7 +48,7 @@ public abstract class FragmentAbstractActivity extends AppCompatActivity impleme
         loadingFragment.setExitTransition(fade);
     }
 
-    public void showFragment(@NonNull AbstractFragment abstractFragment) {
+    public void replaceFragmentView(@NonNull AbstractFragment abstractFragment) {
         fragmentManager.beginTransaction()
                 .setCustomAnimations(0, R.anim.fade_out)
                 .replace(getContainerId(), abstractFragment)
@@ -62,14 +62,6 @@ public abstract class FragmentAbstractActivity extends AppCompatActivity impleme
                 .add(getContainerId(), abstractFragment)
                 .addToBackStack(null)
                 .commit();
-    }
-
-    public void showLoadingRecycler() {
-        if (!loadingFragment.isAdded() && !isFinishing()) {
-            fragmentManager.beginTransaction()
-                    .add(R.id.recycler_container, loadingFragment)
-                    .commit();
-        }
     }
 
     public void showLoadingFragment() {

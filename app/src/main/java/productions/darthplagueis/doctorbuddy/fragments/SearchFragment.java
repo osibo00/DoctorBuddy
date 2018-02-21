@@ -2,7 +2,6 @@ package productions.darthplagueis.doctorbuddy.fragments;
 
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,16 +10,17 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 
 import productions.darthplagueis.doctorbuddy.R;
 import productions.darthplagueis.doctorbuddy.abstractclasses.AbstractFragment;
 import productions.darthplagueis.doctorbuddy.model.Doctor;
 import productions.darthplagueis.doctorbuddy.network.RetrofitFactory;
-import productions.darthplagueis.doctorbuddy.recyclerview.controller.DoctorAdapter;
 import productions.darthplagueis.doctorbuddy.recyclerview.controller.LocationRecyclerAdapter;
 
 
@@ -73,7 +73,13 @@ public class SearchFragment extends AbstractFragment {
         RetrofitFactory.DoctorNetworkListener listener = new RetrofitFactory.DoctorNetworkListener() {
             @Override
             public void doctorCallBack(List<Doctor> responseList) {
-                doctorAdapter.updateList(responseList);
+                List<LatLng> latLngList = new ArrayList<>();
+                for (int i = 0; i < responseList.size(); i++) {
+                    LatLng latLng = new LatLng(responseList.get(i).getPractices().get(0).getLat(),
+                            responseList.get(i).getPractices().get(0).getLon());
+                    latLngList.add(latLng);
+                }
+                doctorAdapter.updateList(responseList, latLngList);
                 getParentActivity().hideLoadingFragment();
             }
 
