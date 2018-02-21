@@ -30,6 +30,7 @@ import java.math.RoundingMode;
 import productions.darthplagueis.doctorbuddy.abstractclasses.FragmentAbstractActivity;
 import productions.darthplagueis.doctorbuddy.fragments.DocDetailFragment;
 import productions.darthplagueis.doctorbuddy.fragments.DoctorFragment;
+import productions.darthplagueis.doctorbuddy.fragments.SearchFragment;
 import productions.darthplagueis.doctorbuddy.model.Doctor;
 import productions.darthplagueis.doctorbuddy.util.NetworkConnectivity;
 
@@ -70,6 +71,7 @@ public class GeneralActivity extends FragmentAbstractActivity implements
 //        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         locationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
     }
 
     @Override
@@ -167,21 +169,25 @@ public class GeneralActivity extends FragmentAbstractActivity implements
 
     public void showDocDetailFragment(Doctor doctor) {
         DocDetailFragment docDetailFragment = new DocDetailFragment();
-        showFragment(docDetailFragment);
+        addFragmentToView(docDetailFragment);
     }
 
-    private void showDoctorFragment(String location) {
+    private void showDoctorFragment(double lat, double lng) {
         if (NetworkConnectivity.isConnected(this)) {
-            DoctorFragment doctorFragment = new DoctorFragment();
-            doctorFragment.setLocation(location);
-            showFragment(doctorFragment);
+            SearchFragment searchFragment = new SearchFragment();
+            searchFragment.setLat(lat);
+            searchFragment.setLng(lng);
+            showFragment(searchFragment);
         } else {
             showSnackbar("No Network Connectivity.");
         }
     }
 
     private void passLocationToFragment() {
-        try {
+        if (ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationProviderClient.getLastLocation().addOnSuccessListener(this,
                     new OnSuccessListener<Location>() {
                         @Override
@@ -190,21 +196,10 @@ public class GeneralActivity extends FragmentAbstractActivity implements
                                 Log.d(TAG, "LastLocation: " + location);
                                 double lat = location.getLatitude();
                                 double lng = location.getLongitude();
-                                String latLng = String.valueOf(roundThreePlaces(lat)) + ","
-                                        + String.valueOf(roundThreePlaces(lng));
-                                Log.d(TAG, "latLng=" + latLng);
-                                showDoctorFragment(latLng);
+                                showDoctorFragment(lat, lng);
                             }
                         }
                     });
-        } catch (SecurityException e) {
-            e.printStackTrace();
         }
-    }
-
-    private double roundThreePlaces(double value) {
-        BigDecimal bigDecimal = new BigDecimal(value);
-        bigDecimal = bigDecimal.setScale(3, RoundingMode.HALF_UP);
-        return bigDecimal.doubleValue();
     }
 }
